@@ -1,0 +1,17 @@
+/* Map Page */
+.containerMapPage {
+    display: flex;
+    height: 100vh;
+}
+
+.leftMapPage {
+    width: 400px;
+    padding: 10px;
+    height: 100vh !important;
+    overflow-y: scroll;
+}
+
+.rightMapPage {
+    width: calc(100% - 380px);
+    height: 100vh;
+}

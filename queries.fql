@@ -1,0 +1,32 @@
+Select('listing'
+Map(
+  Select("data", Take(5, Paginate(Match("all_ref_ids_kas"), { size: 2000 }))),
+  Lambda("x", Select("data", Get(Ref(Collection("kas"), Var("x")))))
+ )
+)
+
+Select(
+  "avgRating",
+  Select(
+    "listing",
+    Select(
+      0,
+      Map(
+        Select(
+          "data",
+          Take(5, Paginate(Match("all_ref_ids_kas"), { size: 2000 }))
+        ),
+        Lambda("x", Select("data", Get(Ref(Collection("kas"), Var("x")))))
+      )
+    )
+  )
+)
+
+
+q.Map(
+        q.Select(
+          "data",
+          q.Take(5, q.Paginate(q.Match("all_ref_ids_kas"), { size: 2000 }))
+        ),
+        q.Lambda("x", q.Select("data", q.Get(q.Ref(q.Collection("kas"), q.Var("x")))))
+      )
