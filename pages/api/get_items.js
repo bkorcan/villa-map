@@ -13,9 +13,7 @@ export default async (req, res) => {
             q.Map(
                 q.Select(
                   "data",
-
                   q.Take(10, q.Drop(d, q.Paginate(q.Match("all_ref_ids_kas"), { size: 2000 })))
-
                 ),
                 q.Lambda("x", q.Select("data", q.Get(q.Ref(q.Collection("kas"), q.Var("x")))))
               )

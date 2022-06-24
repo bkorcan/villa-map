@@ -26,7 +26,7 @@ function Map() {
   // Page Change
   const pageChange = (event, value) => {setPage(value);};
   //  End Of Page Change
-  
+
   // Get Markers
   useEffect(
     async () => {
@@ -48,6 +48,7 @@ function Map() {
 
   return (
     <div className={Style.containerMapPage} >
+      
       {/* Left Side */}
       <div className={Style.leftMapPage}>
         <Stack spacing={2} style={{ marginTop: 40 }} >
@@ -55,9 +56,12 @@ function Map() {
         </Stack>
       </div>
       {/* End Of Left Side */}
+
       {/* Right Side */}
       <div className={Style.rightMapPage} >
+
         <GoogleMap zoom={14} center={center} mapContainerClassName="map-container">
+    
           {/* Clustering Marker */}
           <MarkerClusterer>
             {() =>
@@ -74,15 +78,16 @@ function Map() {
                     strokeColor: "red",
                     strokeWeight: 1.5,
                   }}
-
                 />
               )
             }
           </MarkerClusterer>
           {/* End Of Clustering Marker */}
+
         </GoogleMap>
       </div>
       {/*End Of Right Side */}
+
     </div>
   );
 }
