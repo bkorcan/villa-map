@@ -24,18 +24,52 @@ Select(
 
 // Lets Do Price Filtering
 Filter(
+    Map(
+      Map(
+        Select(
+          "data",
+          Take(20, Paginate(Match("all_ref_ids_kas"), { size: 2000 }))
+        ),
+        Lambda("x", Select("data", Get(Ref(Collection("kas"), Var("x")))))
+      ),
+      Lambda("x", [
+        Select("amount", Select("rate", Select("pricingQuote", Var("x")))),
+        Var("x")
+      ])
+    ),
+    Lambda("x", And( LT(Select(0, Var("x")), 800), GT(Select(0, Var("x")), 500)))
+  )
+
+# Price + Person Capacity filter
+Filter(
   Map(
     Map(
-      Select(
-        "data",
-        Take(4, Paginate(Match("all_ref_ids_kas"), { size: 2000 }))
+      Filter(
+        Map(
+          Map(
+            Select(
+              "data",
+              Take(10, Paginate(Match("all_ref_ids_kas"), { size: 2000 }))
+            ),
+            Lambda("x", Select("data", Get(Ref(Collection("kas"), Var("x")))))
+          ),
+          Lambda("x", [
+            Select("amount", Select("rate", Select("pricingQuote", Var("x")))),
+            Var("x")
+          ])
+        ),
+        Lambda(
+          "x",
+          And(LT(Select(0, Var("x")), 800), GT(Select(0, Var("x")), 500))
+        )
       ),
-      Lambda("x", Select("data", Get(Ref(Collection("kas"), Var("x")))))
+      Lambda("x", [
+        Select("personCapacity", Select("listing", Select(1, Var("x")))),
+        Var("x")
+      ])
     ),
-    Lambda("x", [
-      Select("amount", Select("rate", Select("pricingQuote", Var("x")))),
-      Var("x")
-    ])
+    Lambda("x", [Select(0, Var("x")), Var("x")])
   ),
-  Lambda("x", LT(Select(0, Var("x")), 300))
+
+  Lambda("x", LT(Select(0, Var("x")), 4))
 )
