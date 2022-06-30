@@ -19,20 +19,55 @@ function MapHome() {
 }
 
 function Map() {
+  // Map OnLoad
+  const mapRef = useRef();
+  const onLoad = useCallback((map) => (mapRef.current = map), []);
+  const options = useMemo(() => ({
+    disableDefaultUI: false,
+    clickableIcons: false,
+  }), []);
+  // End Of Map OnLoad
+
+  // States
   const center = useMemo(() => ({ lat: 36.2008559, lng: 29.6453682 }), []);
   const [markersData, setMarkersData] = useState([])
   const [page, setPage] = useState(1);
+  const [screenWidth, setScreenWidth] = useState(0)
+  const [screenHeight, setScreenHeight] = useState(0)
+  // End Of States
+
+  // Get Dimensions Of Map
+  const node = useRef()
+  useEffect(
+    () => {
+      document.addEventListener("mousedown", getDimensions);
+      return () => {
+        document.removeEventListener("mousedown", getDimensions);
+      };
+    }, []);
+
+  const getDimensions = useCallback(
+    (e) => {
+      setScreenWidth(node.current.clientWidth)
+      setScreenHeight(node.current.clientHeight)
+      mapRef.current.addListener("zoom_changed", () => {
+      })
+      // if( node.current.contains(e.target) ) console.log(e.target)
+      return;
+    }, []
+  );
+  // Get Dimensions Of Map
 
   // Page Change
-  const pageChange = (event, value) => {setPage(value);};
+  const pageChange = (event, value) => { setPage(value); };
   //  End Of Page Change
 
   // Get Markers
   useEffect(
     async () => {
       let drop = 0
-            if(page!==5) drop = 10*(page-1)
-            if(page===5) drop = 0
+      if (page !== 5) drop = 10 * (page - 1)
+      if (page === 5) drop = 0
       const res = await fetch(`/api/get_items?d=${drop}`, {
         method: 'GET',
         headers: {
@@ -48,7 +83,7 @@ function Map() {
 
   return (
     <div className={Style.containerMapPage} >
-      
+
       {/* Left Side */}
       <div className={Style.leftMapPage}>
         <Stack spacing={2} style={{ marginTop: 40 }} >
@@ -58,10 +93,11 @@ function Map() {
       {/* End Of Left Side */}
 
       {/* Right Side */}
-      <div className={Style.rightMapPage} >
+      <div ref={node} className={Style.rightMapPage} >
 
-        <GoogleMap zoom={14} center={center} mapContainerClassName="map-container">
-    
+        <GoogleMap zoom={15} center={center} mapContainerClassName="map-container"
+          options={options}
+          onLoad={onLoad}>
           {/* Clustering Marker */}
           <MarkerClusterer>
             {() =>
