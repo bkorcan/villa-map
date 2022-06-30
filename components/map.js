@@ -37,6 +37,7 @@ function Map() {
   const [screenWidth, setScreenWidth] = useState(0)
   const [screenHeight, setScreenHeight] = useState(0)
   const [viewCenter, setViewCenter] = useState({ lat: 36.2008559, lng: 29.6453682 })
+  const [callCard, setCallCard] = useState(false)
   // End Of States
 
   // Get Dimensions Of Map
@@ -51,11 +52,14 @@ function Map() {
 
   const getDimensions = useCallback(
     (e) => {
+      // Check If Card Clicked by Height
+      if (!(e.target.clientHeight == 174)) setCallCard(false)
+      // Check Zoom Change
+      mapRef.current.addListener("zoom_changed", () => { 
+       setCallCard(false) })
+
       setScreenWidth(node.current.clientWidth)
       setScreenHeight(node.current.clientHeight)
-      mapRef.current.addListener("zoom_changed", () => {
-      })
-      // if( node.current.contains(e.target) ) console.log(e.target)
       return;
     }, []
   );
@@ -132,6 +136,7 @@ function Map() {
                       _lat = marker.listing.lat + y
                       : _lat = marker.listing.lat
                     setViewCenter({ lat: _lat, lng: _lng })
+                    setCallCard(true)
                   }}
 
                 />
@@ -140,14 +145,17 @@ function Map() {
           </MarkerClusterer>
 
           {/* End Of Clustering Marker */}
-          <OverlayView
-            position={viewCenter}
-            mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-          >
-            <DummyCard/>
-          </OverlayView>
-          {/* OverLay View */}
 
+
+          {/* OverLay View */}
+          {callCard &&
+            <OverlayView
+              position={viewCenter}
+              mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+            >
+              <DummyCard />
+            </OverlayView>
+          }
           {/* End Of OverLay View */}
 
         </GoogleMap>
