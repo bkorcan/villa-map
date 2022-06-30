@@ -7,6 +7,7 @@ import {
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 import Style from '../styles/home.module.css'
+import { DummyCard } from "./dummyCard";
 
 
 function MapHome() {
@@ -19,6 +20,7 @@ function MapHome() {
 }
 
 function Map() {
+
   // Map OnLoad
   const mapRef = useRef();
   const onLoad = useCallback((map) => (mapRef.current = map), []);
@@ -34,6 +36,7 @@ function Map() {
   const [page, setPage] = useState(1);
   const [screenWidth, setScreenWidth] = useState(0)
   const [screenHeight, setScreenHeight] = useState(0)
+  const [viewCenter, setViewCenter] = useState({ lat: 36.2008559, lng: 29.6453682 })
   // End Of States
 
   // Get Dimensions Of Map
@@ -56,7 +59,7 @@ function Map() {
       return;
     }, []
   );
-  // Get Dimensions Of Map
+  // End Of Get Dimensions Of Map
 
   // Page Change
   const pageChange = (event, value) => { setPage(value); };
@@ -66,8 +69,8 @@ function Map() {
   useEffect(
     async () => {
       let drop = 0
-      if (page !== 5) drop = 10 * (page - 1)
-      if (page === 5) drop = 0
+      if (page !== 10) drop = 10 * (page - 1)
+      if (page === 10) drop = 0
       const res = await fetch(`/api/get_items?d=${drop}`, {
         method: 'GET',
         headers: {
@@ -98,6 +101,7 @@ function Map() {
         <GoogleMap zoom={15} center={center} mapContainerClassName="map-container"
           options={options}
           onLoad={onLoad}>
+
           {/* Clustering Marker */}
           <MarkerClusterer>
             {() =>
@@ -114,11 +118,37 @@ function Map() {
                     strokeColor: "red",
                     strokeWeight: 1.5,
                   }}
+
+                  onClick={() => {
+                    const y = ((mapRef.current.getBounds().getNorthEast().lat() - mapRef.current.getBounds().getSouthWest().lat())) / screenHeight * 180
+                    const x = ((mapRef.current.getBounds().getNorthEast().lng() - mapRef.current.getBounds().getSouthWest().lng())) / screenWidth * 250
+                    let _lng = 0
+                    let _lat = 0
+                    marker.listing.lng > mapRef.current.getCenter().lng() ?
+                      _lng = marker.listing.lng - x
+                      : _lng = marker.listing.lng
+
+                    marker.listing.lat < mapRef.current.getCenter().lat() ?
+                      _lat = marker.listing.lat + y
+                      : _lat = marker.listing.lat
+                    setViewCenter({ lat: _lat, lng: _lng })
+                  }}
+
                 />
               )
             }
           </MarkerClusterer>
+
           {/* End Of Clustering Marker */}
+          <OverlayView
+            position={viewCenter}
+            mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+          >
+            <DummyCard/>
+          </OverlayView>
+          {/* OverLay View */}
+
+          {/* End Of OverLay View */}
 
         </GoogleMap>
       </div>
