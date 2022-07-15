@@ -1,75 +1,54 @@
-Select('listing'
+#Emty/Update dates all of Villas
 Map(
-  Select("data", Take(5, Paginate(Match("all_ref_ids_kas"), { size: 2000 }))),
-  Lambda("x", Select("data", Get(Ref(Collection("kas"), Var("x")))))
- )
+Select("data",Paginate(Match("all_ref_ids_kas"), { size: 2000 })),
+Lambda('x', Update( Ref( Collection('kas'), Var('x') ), {data: { date:[] } }  ))
 )
 
-Select(
-  "avgRating",
-  Select(
-    "listing",
-    Select(
-      0,
-      Map(
-        Select(
-          "data",
-          Take(5, Paginate(Match("all_ref_ids_kas"), { size: 2000 }))
-        ),
-        Lambda("x", Select("data", Get(Ref(Collection("kas"), Var("x")))))
+# Check Dates if match any given dates
+If(
+  ContainsValue(
+    true,
+    Map(
+      [Date("2022-08-02"), Date("2022-08-08"), Date("2022-08-09")],
+      Lambda(
+        "x",
+        ContainsValue(Var("x"), [
+          Date("2022-08-02"),
+          Date("2022-08-03"),
+          Date("2022-08-04")
+        ])
       )
     )
-  )
+  ),
+  false,
+  true
 )
 
-// Lets Do Price Filtering
-Filter(
-    Map(
-      Map(
-        Select(
-          "data",
-          Take(20, Paginate(Match("all_ref_ids_kas"), { size: 2000 }))
-        ),
-        Lambda("x", Select("data", Get(Ref(Collection("kas"), Var("x")))))
-      ),
-      Lambda("x", [
-        Select("amount", Select("rate", Select("pricingQuote", Var("x")))),
-        Var("x")
-      ])
-    ),
-    Lambda("x", And( LT(Select(0, Var("x")), 800), GT(Select(0, Var("x")), 500)))
-  )
 
-# Price + Person Capacity filter
+# Date + personCapacity + Price  Filter
 Filter(
   Map(
-    Map(
-      Filter(
-        Map(
-          Map(
-            Select(
-              "data",
-              Take(10, Paginate(Match("all_ref_ids_kas"), { size: 2000 }))
-            ),
-            Lambda("x", Select("data", Get(Ref(Collection("kas"), Var("x")))))
-          ),
-          Lambda("x", [
-            Select("amount", Select("rate", Select("pricingQuote", Var("x")))),
-            Var("x")
-          ])
-        ),
-        Lambda(
-          "x",
-          And(LT(Select(0, Var("x")), 800), GT(Select(0, Var("x")), 500))
+    Select("data", Take(2, Paginate(Match("all_ref_ids_kas"), { size: 2000 }))),
+    Lambda("x", {
+      price: Select(
+        "amount",
+        Select(
+          "rate",
+          Select(
+            "pricingQuote",
+            Select("data", Get(Ref(Collection("kas"), Var("x"))))
+          )
         )
       ),
-      Lambda("x", [
-        Select("personCapacity", Select("listing", Select(1, Var("x")))),
-        Var("x")
-      ])
-    ),
-    Lambda("x", [Select(0, Var("x")), Var("x")])
+      res: Var("x"),
+      capacity: Select(
+        "personCapacity",
+        Select("listing", Select("data", Get(Ref(Collection("kas"), Var("x")))))
+      ),
+      dates: Map( Select('date', Select("data", Get(Ref(Collection("kas"), Var("x"))))), Lambda('x', Select('date', Var('x'))))
+    })
   ),
-
-  Lambda("x", LT(Select(0, Var("x")), 4))
+  Lambda("x",
+   And (LT( Select("price", Var("x")), 9500), LT( Select("capacity", Var("x")), 40) ) 
+  )
 )
