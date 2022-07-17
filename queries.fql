@@ -49,6 +49,6 @@ Filter(
     })
   ),
   Lambda("x",
-   And (LT( Select("price", Var("x")), 9500), LT( Select("capacity", Var("x")), 40) ) 
+   And (LT( Select("price", Var("x")), 9500), LT( Select("capacity", Var("x")), 40), If(ContainsValue(true,Map([Date("2022-07-17"), Date("2022-06-03")],Lambda("y",ContainsValue(Var("y"), Select('dates', Var('x')) )))),false,true) ) 
   )
 )
