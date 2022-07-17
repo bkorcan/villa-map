@@ -3,6 +3,7 @@ const q = faunadb.query
 
 export default async (req, res) => {
     // const d = Number(req.query.d)
+    const SelectedDates = [q.Date("2022-08-14"),q.Date("2022-06-03")]
     try {
         const client = new faunadb.Client(
             { secret: process.env.SECRET }
@@ -44,12 +45,7 @@ export default async (req, res) => {
                       q.ContainsValue(
                         true,
                         q.Map(
-                          [
-                            q.Date("2022-08-02"),
-                            q.Date("2022-06-03"),
-                            q.Date("2022-06-04"),
-                            q.Date("2022-06-05")
-                          ],
+                            SelectedDates,
                           q.Lambda("y", q.ContainsValue(q.Var("y"), q.Select("dates", q.Var("x"))))
                         )
                       ),
