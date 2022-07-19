@@ -13,7 +13,7 @@ export default async (req, res) => {
             // Query
             q.Filter(
                 q.Map(
-                  q.Select("data", q.Take(2, q.Paginate(q.Match("all_ref_ids_kas"), { size: 2000 }))),
+                  q.Select("data", q.Take(20, q.Paginate(q.Match("all_ref_ids_kas"), { size: 2000 }))),
                   q.Lambda("x", {
                     price: q.Select(
                       "amount",
@@ -39,8 +39,9 @@ export default async (req, res) => {
                 q.Lambda(
                   "x",
                   q.And(
-                    q.LTE(q.Select("price", q.Var("x")), 9500),
-                    q.LTE(q.Select("capacity", q.Var("x")), 3),
+                    q.LTE(q.Select("price", q.Var("x")), 600),
+                    q.GTE(q.Select("price", q.Var("x")), 300),
+                    q.LTE(q.Select("capacity", q.Var("x")), 5),
                     q.If(
                       q.ContainsValue(
                         true,
