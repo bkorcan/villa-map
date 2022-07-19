@@ -39,8 +39,8 @@ export default async (req, res) => {
                 q.Lambda(
                   "x",
                   q.And(
-                    q.LT(q.Select("price", q.Var("x")), 9500),
-                    q.LT(q.Select("capacity", q.Var("x")), 40),
+                    q.LTE(q.Select("price", q.Var("x")), 9500),
+                    q.LTE(q.Select("capacity", q.Var("x")), 3),
                     q.If(
                       q.ContainsValue(
                         true,
