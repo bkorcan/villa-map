@@ -56,7 +56,7 @@ export default async (req, res) => {
               )
             )
           )
-        ), q.Lambda('x', q.Select('data',q.Get(q.Ref(q.Collection("kas"), q.Select('res', q.Var('x'))))))
+        ), q.Lambda('x', q.Select('data', q.Get(q.Ref(q.Collection("kas"), q.Select('res', q.Var('x'))))))
       )
       // End Of Query
     )

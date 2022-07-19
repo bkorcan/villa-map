@@ -55,8 +55,9 @@ function Map() {
       // Check If Card Clicked by Height
       if (!(e.target.clientHeight == 174)) setCallCard(false)
       // Check Zoom Change
-      mapRef.current.addListener("zoom_changed", () => { 
-       setCallCard(false) })
+      mapRef.current.addListener("zoom_changed", () => {
+        setCallCard(false)
+      })
 
       setScreenWidth(node.current.clientWidth)
       setScreenHeight(node.current.clientHeight)
