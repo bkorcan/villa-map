@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -28,10 +27,31 @@ function Filter() {
     const [focus, setFocus] = useState(false)
     const [disabled, setDisabled] = useState({ before: new Date() })
 
-    const handleChangeGuests = (event) => {
-        setGuests(event.target.value);
-    };
+    // Routing
+    const router = useRouter()
+    const [town, setTown] = useState('')
+    const [currency, setCurrency] = useState('USD')
+    const [minPrice, setMinPrice] = useState(0)
+    const [maxPrice, setMaxPrice] = useState(0)
+    const [showSubmit, setShowSubmit] = useState(false)
 
+    // Check Outside Click Of  Date
+    useEffect(
+        () => {
+            document.addEventListener("mousedown", clickOutsideDate);
+            return () => {
+                document.removeEventListener("mousedown", clickOutsideDate);
+            };
+        }, []);
+        const clickOutsideDate = useCallback(
+            (e) => {
+              if( !( e.target.clientWidth == 0|| e.target.clientWidth == 16 || e.target.clientWidth == 18|| e.target.clientWidth == 38|| e.target.clientWidth == 40|| e.target.clientWidth == 112 || e.target.clientWidth == 197|| e.target.clientWidth == 280|| e.target.clientWidth == 312 ) ) { setShow('none')}
+              return;
+            }, []
+          );
+          // End Of Check Outside Click Of  Date
+
+    // Handle Functions
     const dayClicked = (day) => {
         if (!focus) {
             setCheckInText(format(day, 'dd MMM yy'));
@@ -46,13 +66,11 @@ function Filter() {
             setDisabled({ before: new Date() })
         }
     }
-    // Routing
-    const router = useRouter()
-    const [town, setTown] = useState('')
-    const [currency, setCurrency] = useState('USD')
-    const [minPrice, setMinPrice] = useState(0)
-    const [maxPrice, setMaxPrice] = useState(0)
-    const [showSubmit, setShowSubmit] = useState(false)
+
+    const handleSubmit = () => {
+        router.push(`/map?t=${town}&ci=${checkInText.replace(/ /g, '')}&co=${checkOutText.replace(/ /g, '')}&g=${guests}&minp=${minPrice}&maxp=${maxPrice}`)
+    }
+    // End Of Handle Functions
 
     return (
         <Box
@@ -140,9 +158,8 @@ function Filter() {
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             value={guests}
-                            onChange={handleChangeGuests}
+                            onChange={(event) => setGuests(event.target.value)}
                             defaultValue={1}
-
                         >
                             <MenuItem value={1}>1</MenuItem>
                             <MenuItem value={2}>2</MenuItem>
@@ -182,13 +199,15 @@ function Filter() {
                         <FormControlLabel value="TL" control={<Radio />} label="TL" />
                     </RadioGroup>
                 </FormControl>
+                {/* End of Price Currency */}
                 {/* Price value */}
                 <TextField onChange={(e) => setMinPrice(e.target.value)}
                     id="standard-basic1" label="min" type='number' variant="standard" style={{ width: 90, marginRight: 40, marginTop: -15, marginLeft: 30 }} />
                 <TextField onChange={(e) => setMaxPrice(e.target.value)}
                     id="standard-basic2" label="max" type='number' variant="standard" style={{ width: 90, marginBottom: 70, marginTop: -15, }} />
                 <Divider style={{ marginTop: 0 }} />
-                {/* Price */}
+                {/* End Of Price Value */}
+                {/* End of Price */}
                 {/* Submit Button */}
                 <Button disabled
                     fullWidth
@@ -204,11 +223,7 @@ function Filter() {
                     variant="contained"
                     sx={{ mt: 3, mb: 2 }}
                     style={{ paddingTop: 5, paddingBottom: 5, fontSize: 20, backgroundColor: 'purple', display: showSubmit ? 'block' : 'none' }}
-                    onClick={() => {
-                        // const {t, ci, co, g, minp, maxp } = router.query
-                        router.push(`/map?t=${town}&ci=${checkInText.replace(/ /g, '')}&co=${checkOutText.replace(/ /g, '')}&g=${guests}&minp=${minPrice}&maxp=${maxPrice}`)
-                    }}
-
+                    onClick={handleSubmit}
                 >
                     Apply
                 </Button>
