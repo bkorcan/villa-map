@@ -1,9 +1,9 @@
 import * as React from 'react';
+import { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import VillaIcon from '@mui/icons-material/Villa';
@@ -13,36 +13,25 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
-import Style from '../styles/home.module.css'
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
-import { useStore } from '../components/state_day'
 import format from 'date-fns/format';
 import { useRouter } from 'next/router'
 
 
-
 function Filter() {
-    // Number  Of People
-    const [guests, setGuests] = React.useState(2);
+    const [guests, setGuests] = useState(2);
+    const [moveRight, setMoveRight] = useState(false)
+    const [show, setShow] = useState('none')
+    const [checkInText, setCheckInText] = useState('Check In')
+    const [checkOutText, setCheckOutText] = useState('Check Out')
+    const [focus, setFocus] = useState(false)
+    const [disabled, setDisabled] = useState({ before: new Date() })
 
     const handleChangeGuests = (event) => {
         setGuests(event.target.value);
     };
-    // Date_picker
-    const moveRight = useStore(state => state.moveRight)
-    const setMoveRight = useStore(state => state.setMoveRight)
-    const show = useStore(state => state.show)
-    const setShow = useStore(state => state.setShow)
-    const checkInText = useStore(state => state.checkInText)
-    const setCheckInText = useStore(state => state.setCheckInText)
-    const checkOutText = useStore(state => state.checkOutText)
-    const setCheckOutText = useStore(state => state.setCheckOutText)
-    const focus = useStore(state => state.focus)
-    const setFocus = useStore(state => state.setFocus)
-    const disabled = useStore(state => state.disabled)
-    const setDisabled = useStore(state => state.setDisabled)
-    //   
+
     const dayClicked = (day) => {
         if (!focus) {
             setCheckInText(format(day, 'dd MMM yy'));
@@ -59,11 +48,11 @@ function Filter() {
     }
     // Routing
     const router = useRouter()
-    const [town, setTown] = React.useState('')
-    const [currency, setCurrency] = React.useState('USD')
-    const [minPrice, setMinPrice] = React.useState(0)
-    const [maxPrice, setMaxPrice] = React.useState(0)
-    const [showSubmit, setShowSubmit] = React.useState(false)
+    const [town, setTown] = useState('')
+    const [currency, setCurrency] = useState('USD')
+    const [minPrice, setMinPrice] = useState(0)
+    const [maxPrice, setMaxPrice] = useState(0)
+    const [showSubmit, setShowSubmit] = useState(false)
 
     return (
         <Box
@@ -80,12 +69,15 @@ function Filter() {
                 height: '100vh',
             }}
         >
+            {/* Logo and Slogan */}
             <Avatar sx={{ bgcolor: 'secondary.main', marginTop: -6 }}>
                 <VillaIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
                 Holiday Villas
             </Typography>
+            {/* End Of Logo and Slogan  */}
+            {/* Select A Region */}
             <Typography color='secondary' style={{ width: '100%', textAlign: 'left', fontSize: 20, marginTop: 41 }}>
                 Select A Region
             </Typography>
@@ -108,14 +100,14 @@ function Filter() {
                     </RadioGroup>
                 </FormControl>
                 <Divider />
-
+                {/* End Of Select and Region */}
                 {/* Day Container */}
                 {/* Dates */}
                 <Typography color='secondary' style={{ width: '100%', textAlign: 'left', fontSize: 20, marginTop: 30 }}>
                     Choose Dates
                 </Typography>
                 {/* End Of Dates */}
-                <div  style={{ position:'relative'}} >
+                <div style={{ position: 'relative' }} >
                     <TextField margin="normal" name="CheckIn" value={checkInText} autoComplete="off" label="Check In" type="text" id="check_in" style={{ width: '45%', marginRight: '5%' }}
                         onClick={() => { setDisabled(disabled); setShow('block'); }}
 
@@ -123,13 +115,14 @@ function Filter() {
                     <TextField margin="normal" name="CheckOut" value={checkOutText} label="Check Out" type="text" id="check_out" style={{ width: '45%' }}
                         focused={focus}
                     />
-                    <div  style={{ left: moveRight ? 100 : 0, display: show , 
-                        position:'absolute', 
-                        backgroundColor:'#fff',
-                        border:'1px solid #ccc',
-                        top:72,
-                        zIndex:6
-                        }} >
+                    <div style={{
+                        left: moveRight ? 100 : 0, display: show,
+                        position: 'absolute',
+                        backgroundColor: '#fff',
+                        border: '1px solid #ccc',
+                        top: 72,
+                        zIndex: 6
+                    }} >
                         <DayPicker
                             onDayClick={dayClicked}
                             disabled={disabled}
@@ -141,7 +134,7 @@ function Filter() {
                 <Typography color='secondary' style={{ width: '100%', textAlign: 'left', fontSize: 20, marginTop: 15 }}>
                     Number Of  <span style={{ color: 'black' }}> Adults + Kids </span> (age 2 and up)
                 </Typography>
-                <Box sx={{ minWidth: 120, marginTop:3 }}>
+                <Box sx={{ minWidth: 120, marginTop: 3 }}>
                     <FormControl style={{ width: 90, marginTop: -20 }}>
                         <Select
                             labelId="demo-simple-select-label"
@@ -171,7 +164,7 @@ function Filter() {
                     </FormControl>
                 </Box>
                 <Divider style={{ marginTop: 10 }} />
-
+                {/* End Of Number of People */}
                 {/* Price */}
                 <Typography color='secondary' style={{ width: '100%', textAlign: 'left', fontSize: 20, marginTop: 30 }}>
                     Price
@@ -189,7 +182,6 @@ function Filter() {
                         <FormControlLabel value="TL" control={<Radio />} label="TL" />
                     </RadioGroup>
                 </FormControl>
-
                 {/* Price value */}
                 <TextField onChange={(e) => setMinPrice(e.target.value)}
                     id="standard-basic1" label="min" type='number' variant="standard" style={{ width: 90, marginRight: 40, marginTop: -15, marginLeft: 30 }} />
@@ -197,6 +189,7 @@ function Filter() {
                     id="standard-basic2" label="max" type='number' variant="standard" style={{ width: 90, marginBottom: 70, marginTop: -15, }} />
                 <Divider style={{ marginTop: 0 }} />
                 {/* Price */}
+                {/* Submit Button */}
                 <Button disabled
                     fullWidth
                     variant="contained"
@@ -219,7 +212,7 @@ function Filter() {
                 >
                     Apply
                 </Button>
-
+                {/* End Of Submit Button */}
             </Box>
         </Box>
     );
