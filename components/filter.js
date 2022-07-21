@@ -43,13 +43,16 @@ function Filter() {
                 document.removeEventListener("mousedown", clickOutsideDate);
             };
         }, []);
-        const clickOutsideDate = useCallback(
-            (e) => {
-              if( !( e.target.clientWidth == 0|| e.target.clientWidth == 16 || e.target.clientWidth == 18|| e.target.clientWidth == 38|| e.target.clientWidth == 40|| e.target.clientWidth == 112 || e.target.clientWidth == 197|| e.target.clientWidth == 280|| e.target.clientWidth == 312 ) ) { setShow('none')}
-              return;
-            }, []
-          );
-          // End Of Check Outside Click Of  Date
+    const clickOutsideDate = useCallback(
+        (e) => {
+            if ((e.target.clientWidth == 0 || e.target.clientWidth == 16 || e.target.clientWidth == 18 || e.target.clientWidth == 38 || e.target.clientWidth == 40 || e.target.clientWidth == 112 || e.target.clientWidth == 197 || e.target.clientWidth == 280 || e.target.clientWidth == 312)) {
+               console.log(e.target.parentElement.className); 
+            }
+            else {setShow('none'); setFocus(false); setMoveRight(false); setDisabled({ before: new Date() })}
+            return;
+        }, []
+    );
+    // End Of Check Outside Click Of  Date
 
     // Handle Functions
     const dayClicked = (day) => {
