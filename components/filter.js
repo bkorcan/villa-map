@@ -16,6 +16,7 @@ import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import format from 'date-fns/format';
 import { useRouter } from 'next/router'
+import { useStore } from './state'
 
 
 function Filter() {
@@ -27,13 +28,18 @@ function Filter() {
     const [focus, setFocus] = useState(false)
     const [disabled, setDisabled] = useState({ before: new Date() })
 
+    // Global States
+    const setDateArray = useStore(state => state.setDateArray)
+
     // Routing
     const router = useRouter()
     const [town, setTown] = useState('')
     const [currency, setCurrency] = useState('USD')
     const [minPrice, setMinPrice] = useState(0)
-    const [maxPrice, setMaxPrice] = useState(0)
+    const [maxPrice, setMaxPrice] = useState(10000)
     const [showSubmit, setShowSubmit] = useState(false)
+    const [dateStart, SetDateStart] = useState(new Date('2000-01-01'))
+    const [dateEnd, SetDateEnd] = useState(new Date('2000-01-01'))
 
     // Check Outside Click Of  Date
     useEffect(
@@ -45,23 +51,23 @@ function Filter() {
         }, []);
     const clickOutsideDate = useCallback(
         (e) => {
-            if ((e.target.clientWidth == 0 || e.target.clientWidth == 16 || e.target.clientWidth == 18 || e.target.clientWidth == 38 || e.target.clientWidth == 40 || e.target.clientWidth == 112 || e.target.clientWidth == 197 || e.target.clientWidth == 280 || e.target.clientWidth == 312)) {
-               console.log(e.target.parentElement.className); 
-            }
-            else {setShow('none'); setFocus(false); setMoveRight(false); setDisabled({ before: new Date() })}
+            const cw = e.target.clientWidth
+            if ((cw == 0 || cw == 16 || cw == 18 || cw == 38 || cw == 36 || cw == 9 || cw == 40 || cw == 112 || cw == 197 || cw == 280 || cw == 312)) { }
+            else { setShow('none'); setFocus(false); setMoveRight(false); setDisabled({ before: new Date() }) }
             return;
-        }, []
-    );
+        }, []);
     // End Of Check Outside Click Of  Date
 
     // Handle Functions
     const dayClicked = (day) => {
         if (!focus) {
+            SetDateStart(day)
             setCheckInText(format(day, 'dd MMM yy'));
             setMoveRight(true);
             setFocus(true);
             setDisabled({ before: day })
         } else {
+            SetDateEnd(day)
             setCheckOutText(format(day, 'dd MMM yy'));
             setShow('none')
             setFocus(false)
@@ -71,9 +77,29 @@ function Filter() {
     }
 
     const handleSubmit = () => {
-        router.push(`/map?t=${town}&ci=${checkInText.replace(/ /g, '')}&co=${checkOutText.replace(/ /g, '')}&g=${guests}&minp=${minPrice}&maxp=${maxPrice}`)
+        setDateArray (getDates(dateStart, dateEnd).map(day => format(day, 'y-MM-dd')))
+        // router.push(`/map?t=${town}&ci=${dateStart}&co=${dateEnd}&g=${guests}&minp=${minPrice}&maxp=${maxPrice}`)
+        router.push(`/map`)
     }
     // End Of Handle Functions
+
+    // Date Range
+    Date.prototype.addDays = function (days) {
+        var date = new Date(this.valueOf());
+        date.setDate(date.getDate() + days);
+        return date;
+    }
+
+    function getDates(startDate, stopDate) {
+        var dateArray = new Array();
+        var currentDate = startDate;
+        while (currentDate <= stopDate) {
+            dateArray.push(new Date(currentDate));
+            currentDate = currentDate.addDays(1);
+        }
+        return dateArray;
+    }
+    // End Of Date Range
 
     return (
         <Box
@@ -194,7 +220,7 @@ function Filter() {
                 <FormControl >
                     <RadioGroup row
                         aria-labelledby="demo-radio-buttons-group-label"
-                        defaultValue="USD"
+                        defaultValue={currency}
                         name="radio-buttons-group"
                         onChange={(e) => setCurrency(e.target.value)}
                     >
@@ -204,9 +230,13 @@ function Filter() {
                 </FormControl>
                 {/* End of Price Currency */}
                 {/* Price value */}
-                <TextField onChange={(e) => setMinPrice(e.target.value)}
+                <TextField
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(e.target.value)}
                     id="standard-basic1" label="min" type='number' variant="standard" style={{ width: 90, marginRight: 40, marginTop: -15, marginLeft: 30 }} />
-                <TextField onChange={(e) => setMaxPrice(e.target.value)}
+                <TextField
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value)}
                     id="standard-basic2" label="max" type='number' variant="standard" style={{ width: 90, marginBottom: 70, marginTop: -15, }} />
                 <Divider style={{ marginTop: 0 }} />
                 {/* End Of Price Value */}

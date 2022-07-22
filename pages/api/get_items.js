@@ -2,7 +2,8 @@ const faunadb = require('faunadb')
 const q = faunadb.query
 
 export default async (req, res) => {
-  // const d = Number(req.query.d)
+  const d = req.query.d
+  console.log(d)
   const SelectedDates = [q.Date("2022-08-14"), q.Date("2022-06-03")]
   try {
     const client = new faunadb.Client(
@@ -11,53 +12,54 @@ export default async (req, res) => {
     const data = await client.query(
 
       // Query
-      q.Map(
-        q.Filter(
-          q.Map(
-            q.Select("data", q.Take(20, q.Paginate(q.Match("all_ref_ids_kas"), { size: 2000 }))),
-            q.Lambda("x", {
-              price: q.Select(
-                "amount",
+      // q.Map(
+      q.Filter(
+        q.Map(
+          q.Select("data", q.Take(20, q.Paginate(q.Match("all_ref_ids_kas"), { size: 2000 }))),
+          q.Lambda("x", {
+            price: q.Select(
+              "amount",
+              q.Select(
+                "rate",
                 q.Select(
-                  "rate",
-                  q.Select(
-                    "pricingQuote",
-                    q.Select("data", q.Get(q.Ref(q.Collection("kas"), q.Var("x"))))
-                  )
+                  "pricingQuote",
+                  q.Select("data", q.Get(q.Ref(q.Collection("kas"), q.Var("x"))))
+                )
+              )
+            ),
+            res: q.Var("x"),
+            capacity: q.Select(
+              "personCapacity",
+              q.Select("listing", q.Select("data", q.Get(q.Ref(q.Collection("kas"), q.Var("x")))))
+            ),
+            dates: q.Map(
+              q.Select("date", q.Select("data", q.Get(q.Ref(q.Collection("kas"), q.Var("x"))))),
+              q.Lambda("x", q.Select("date", q.Var("x")))
+            )
+          })
+        ),
+        q.Lambda(
+          "x",
+          q.And(
+            q.LTE(q.Select("price", q.Var("x")), 60000),
+            q.GTE(q.Select("price", q.Var("x")), 0),
+            q.LTE(q.Select("capacity", q.Var("x")), 45),
+            q.If(
+              q.ContainsValue(
+                true,
+                q.Map(
+                  SelectedDates,
+                  q.Lambda("y", q.ContainsValue(q.Var("y"), q.Select("dates", q.Var("x"))))
                 )
               ),
-              res: q.Var("x"),
-              capacity: q.Select(
-                "personCapacity",
-                q.Select("listing", q.Select("data", q.Get(q.Ref(q.Collection("kas"), q.Var("x")))))
-              ),
-              dates: q.Map(
-                q.Select("date", q.Select("data", q.Get(q.Ref(q.Collection("kas"), q.Var("x"))))),
-                q.Lambda("x", q.Select("date", q.Var("x")))
-              )
-            })
-          ),
-          q.Lambda(
-            "x",
-            q.And(
-              q.LTE(q.Select("price", q.Var("x")), 600),
-              q.GTE(q.Select("price", q.Var("x")), 300),
-              q.LTE(q.Select("capacity", q.Var("x")), 5),
-              q.If(
-                q.ContainsValue(
-                  true,
-                  q.Map(
-                    SelectedDates,
-                    q.Lambda("y", q.ContainsValue(q.Var("y"), q.Select("dates", q.Var("x"))))
-                  )
-                ),
-                false,
-                true
-              )
+              false,
+              true
             )
           )
-        ), q.Lambda('x', q.Select('data', q.Get(q.Ref(q.Collection("kas"), q.Select('res', q.Var('x'))))))
+        )
       )
+      //  , q.Lambda('x', q.Select('data', q.Get(q.Ref(q.Collection("kas"), q.Select('res', q.Var('x'))))))
+      // )
       // End Of Query
     )
 
