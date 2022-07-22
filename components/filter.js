@@ -77,9 +77,9 @@ function Filter() {
     }
 
     const handleSubmit = () => {
-        setDateArray (getDates(dateStart, dateEnd).map(day => format(day, 'y-MM-dd')))
-        // router.push(`/map?t=${town}&ci=${dateStart}&co=${dateEnd}&g=${guests}&minp=${minPrice}&maxp=${maxPrice}`)
-        router.push(`/map`)
+        // setDateArray (getDates(dateStart, dateEnd).map(day => format(day, 'y-MM-dd')))
+        console.log(getDates(dateStart, dateEnd).map(day => format(day, 'y-MM-dd')))
+        // router.push(`/map`)
     }
     // End Of Handle Functions
 

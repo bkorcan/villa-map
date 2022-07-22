@@ -2,9 +2,10 @@ const faunadb = require('faunadb')
 const q = faunadb.query
 
 export default async (req, res) => {
-  const d = req.query.d
-  console.log(d)
-  const SelectedDates = [q.Date("2022-08-14"), q.Date("2022-06-03")]
+  // const d = req.query.d
+  // console.log(d)
+  // const SelectedDates = [q.Date("2022-08-14"), q.Date("2022-07-24")]
+  const d = ["2022-08-14", "2022-08-04", "2022-07-24", "2022-09-04"]
   try {
     const client = new faunadb.Client(
       { secret: process.env.SECRET }
@@ -15,7 +16,7 @@ export default async (req, res) => {
       // q.Map(
       q.Filter(
         q.Map(
-          q.Select("data", q.Take(20, q.Paginate(q.Match("all_ref_ids_kas"), { size: 2000 }))),
+          q.Select("data", q.Take(5, q.Paginate(q.Match("all_ref_ids_kas"), { size: 2000 }))),
           q.Lambda("x", {
             price: q.Select(
               "amount",
@@ -48,7 +49,7 @@ export default async (req, res) => {
               q.ContainsValue(
                 true,
                 q.Map(
-                  SelectedDates,
+                   q.Map(d, q.Lambda('x', q.Date(q.Var('x')) ) ),
                   q.Lambda("y", q.ContainsValue(q.Var("y"), q.Select("dates", q.Var("x"))))
                 )
               ),
