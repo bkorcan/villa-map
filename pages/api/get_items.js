@@ -1,11 +1,14 @@
 const faunadb = require('faunadb')
 const q = faunadb.query
+import { range } from '../../components/range'
 
 export default async (req, res) => {
-  // const d = req.query.d
-  // console.log(d)
+  const ds = req.query.ds
+  const de = req.query.de
+  console.log(ds, de)
   // const SelectedDates = [q.Date("2022-08-14"), q.Date("2022-07-24")]
-  const d = ["2022-08-14", "2022-08-04", "2022-07-24", "2022-09-04"]
+  console.log(range(new Date(ds),new Date(de)))
+  const d = ["2022-05-14", "2022-05-04", "2022-05-24", "2022-05-17"]
   try {
     const client = new faunadb.Client(
       { secret: process.env.SECRET }
@@ -13,7 +16,7 @@ export default async (req, res) => {
     const data = await client.query(
 
       // Query
-      // q.Map(
+      q.Map(
       q.Filter(
         q.Map(
           q.Select("data", q.Take(5, q.Paginate(q.Match("all_ref_ids_kas"), { size: 2000 }))),
@@ -59,8 +62,8 @@ export default async (req, res) => {
           )
         )
       )
-      //  , q.Lambda('x', q.Select('data', q.Get(q.Ref(q.Collection("kas"), q.Select('res', q.Var('x'))))))
-      // )
+       , q.Lambda('x', q.Select('data', q.Get(q.Ref(q.Collection("kas"), q.Select('res', q.Var('x'))))))
+      )
       // End Of Query
     )
 

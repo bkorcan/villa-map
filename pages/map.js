@@ -9,7 +9,7 @@ import Stack from '@mui/material/Stack';
 import Style from '../styles/home.module.css'
 import { DummyCard } from "../components/dummyCard";
 import { useStore } from '../components/state'
-
+import format from 'date-fns/format';
 
 export default function MapHome() {
   const { isLoaded } = useLoadScript({
@@ -42,6 +42,8 @@ function Map() {
 
   // Global States
   const dateArray = useStore(state => state.dateArray)
+  const dateStart = useStore(state => state.dateStart)
+  const dateEnd = useStore(state => state.dateEnd)
 
   // End Of States
 
@@ -81,7 +83,10 @@ function Map() {
       let drop = 0
       if (page !== 10) drop = 10 * (page - 1)
       if (page === 10) drop = 0
-      const res = await fetch(`/api/get_items?d=${dateArray}`, {
+      const ds = '"'+format(dateStart, 'y-MM-dd')+'"'
+      const de = '"'+format(dateEnd, 'y-MM-dd')+'"'
+      
+      const res = await fetch(`/api/get_items?ds=${ds}&de=${de}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -93,7 +98,6 @@ function Map() {
     }, [page]
   )
   // End Of Get Markers
-
   return (
     <div className={Style.containerMapPage} >
 

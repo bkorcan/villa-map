@@ -38,8 +38,9 @@ function Filter() {
     const [minPrice, setMinPrice] = useState(0)
     const [maxPrice, setMaxPrice] = useState(10000)
     const [showSubmit, setShowSubmit] = useState(false)
-    const [dateStart, SetDateStart] = useState(new Date('2000-01-01'))
-    const [dateEnd, SetDateEnd] = useState(new Date('2000-01-01'))
+    // Global Zustand States
+    const setDateStart = useStore(state => state.setDateStart)
+    const setDateEnd = useStore(state => state.setDateEnd)
 
     // Check Outside Click Of  Date
     useEffect(
@@ -61,13 +62,13 @@ function Filter() {
     // Handle Functions
     const dayClicked = (day) => {
         if (!focus) {
-            SetDateStart(day)
+            setDateStart(day)
             setCheckInText(format(day, 'dd MMM yy'));
             setMoveRight(true);
             setFocus(true);
             setDisabled({ before: day })
         } else {
-            SetDateEnd(day)
+            setDateEnd(day)
             setCheckOutText(format(day, 'dd MMM yy'));
             setShow('none')
             setFocus(false)
@@ -78,8 +79,8 @@ function Filter() {
 
     const handleSubmit = () => {
         // setDateArray (getDates(dateStart, dateEnd).map(day => format(day, 'y-MM-dd')))
-        console.log(getDates(dateStart, dateEnd).map(day => format(day, 'y-MM-dd')))
-        // router.push(`/map`)
+        // console.log(getDates(dateStart, dateEnd).map(day => format(day, 'y-MM-dd')))
+        router.push(`/map`)
     }
     // End Of Handle Functions
 
