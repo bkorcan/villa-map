@@ -5,10 +5,10 @@ import { range } from '../../components/range'
 export default async (req, res) => {
   const ds = req.query.ds
   const de = req.query.de
-  console.log(ds, de)
-  // const SelectedDates = [q.Date("2022-08-14"), q.Date("2022-07-24")]
+  // console.log(ds, de)
   console.log(range(new Date(ds),new Date(de)))
-  const d = ["2022-05-14", "2022-05-04", "2022-05-24", "2022-05-17"]
+  // const d = ["2022-05-14", "2022-05-04", "2022-05-24", "2022-05-17"]
+    const d = range(new Date(ds),new Date(de))
   try {
     const client = new faunadb.Client(
       { secret: process.env.SECRET }
