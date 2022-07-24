@@ -27,18 +27,19 @@ function Filter() {
     const [checkOutText, setCheckOutText] = useState('Check Out')
     const [focus, setFocus] = useState(false)
     const [disabled, setDisabled] = useState({ before: new Date() })
+    const [showSubmit, setShowSubmit] = useState(false)
 
     // Global States
-    const setDateArray = useStore(state => state.setDateArray)
 
     // Routing
     const router = useRouter()
     const [town, setTown] = useState('')
     const [currency, setCurrency] = useState('USD')
-    const [minPrice, setMinPrice] = useState(0)
-    const [maxPrice, setMaxPrice] = useState(10000)
-    const [showSubmit, setShowSubmit] = useState(false)
     // Global Zustand States
+    const minPrice = useStore(state => state.minPrice)
+    const maxPrice = useStore(state => state.maxPrice)
+    const setMinPrice = useStore(state => state.setMinPrice)
+    const setMaxPrice = useStore(state => state.setMaxPrice)
     const setDateStart = useStore(state => state.setDateStart)
     const setDateEnd = useStore(state => state.setDateEnd)
 
@@ -78,7 +79,6 @@ function Filter() {
     }
 
     const handleSubmit = () => {
-        // setDateArray (getDates(dateStart, dateEnd).map(day => format(day, 'y-MM-dd')))
         // console.log(getDates(dateStart, dateEnd).map(day => format(day, 'y-MM-dd')))
         router.push(`/map`)
     }

@@ -5,10 +5,13 @@ import { range } from '../../components/range'
 export default async (req, res) => {
   const ds = req.query.ds
   const de = req.query.de
+  const minp = Number( req.query.minp)
+  const maxp = Number( req.query.maxp)
+  // console.log(minp, maxp)
   // console.log(ds, de)
-  console.log(range(new Date(ds),new Date(de)))
-  // const d = ["2022-05-14", "2022-05-04", "2022-05-24", "2022-05-17"]
-    const d = range(new Date(ds),new Date(de))
+  // console.log(range(new Date(ds),new Date(de)))
+  const d = ["2022-05-14", "2022-05-04", "2022-05-24", "2022-05-17"]
+    // const d = range(new Date(ds),new Date(de))
   try {
     const client = new faunadb.Client(
       { secret: process.env.SECRET }
@@ -45,8 +48,8 @@ export default async (req, res) => {
         q.Lambda(
           "x",
           q.And(
-            q.LTE(q.Select("price", q.Var("x")), 60000),
-            q.GTE(q.Select("price", q.Var("x")), 0),
+            q.LTE(q.Select("price", q.Var("x")), maxp),
+            q.GTE(q.Select("price", q.Var("x")), minp),
             q.LTE(q.Select("capacity", q.Var("x")), 45),
             q.If(
               q.ContainsValue(
