@@ -45,6 +45,7 @@ function Map() {
   const dateEnd = useStore(state => state.dateEnd)
   const minPrice = useStore(state => state.minPrice)
   const maxPrice = useStore(state => state.maxPrice)
+  const capacity = useStore(state => state.capacity)
 
   // End Of States
 
@@ -87,7 +88,7 @@ function Map() {
       const ds = '"'+format(dateStart, 'y-MM-dd')+'"'
       const de = '"'+format(dateEnd, 'y-MM-dd')+'"'
       
-      const res = await fetch(`/api/get_items?ds=${ds}&de=${de}&minp=${minPrice}&maxp=${maxPrice}`, {
+      const res = await fetch(`/api/get_items?ds=${ds}&de=${de}&minp=${minPrice}&maxp=${maxPrice}&c=${capacity}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'

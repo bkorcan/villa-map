@@ -42,6 +42,8 @@ function Filter() {
     const setMaxPrice = useStore(state => state.setMaxPrice)
     const setDateStart = useStore(state => state.setDateStart)
     const setDateEnd = useStore(state => state.setDateEnd)
+    const capacity = useStore(state => state.capacity)
+    const setCapacity = useStore(state => state.setCapacity)
 
     // Check Outside Click Of  Date
     useEffect(
@@ -79,28 +81,9 @@ function Filter() {
     }
 
     const handleSubmit = () => {
-        // console.log(getDates(dateStart, dateEnd).map(day => format(day, 'y-MM-dd')))
         router.push(`/map`)
     }
     // End Of Handle Functions
-
-    // Date Range
-    Date.prototype.addDays = function (days) {
-        var date = new Date(this.valueOf());
-        date.setDate(date.getDate() + days);
-        return date;
-    }
-
-    function getDates(startDate, stopDate) {
-        var dateArray = new Array();
-        var currentDate = startDate;
-        while (currentDate <= stopDate) {
-            dateArray.push(new Date(currentDate));
-            currentDate = currentDate.addDays(1);
-        }
-        return dateArray;
-    }
-    // End Of Date Range
 
     return (
         <Box
@@ -188,7 +171,7 @@ function Filter() {
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             value={guests}
-                            onChange={(event) => setGuests(event.target.value)}
+                            onChange={(event) =>{ setGuests(event.target.value); setCapacity(event.target.value)}}
                             defaultValue={1}
                         >
                             <MenuItem value={1}>1</MenuItem>

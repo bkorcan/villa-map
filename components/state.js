@@ -12,6 +12,9 @@ const useStore = create(set => ({
     
     maxPrice:10000,
     setMaxPrice:(v)=>set( state=>({ maxPrice:v }) ),
+
+    capacity:2,
+    setCapacity:(v)=>set( state=>({ capacity:v }) ),
 }))
 
 export {useStore}
