@@ -53,7 +53,7 @@ export default async (req, res) => {
           q.And(
             q.LTE(q.Select("price", q.Var("x")), maxp),
             q.GTE(q.Select("price", q.Var("x")), minp),
-            q.LTE(q.Select("capacity", q.Var("x")), c),
+            q.GTE(q.Select("capacity", q.Var("x")), c),
             q.If(
               q.ContainsValue(
                 true,
